@@ -8,7 +8,7 @@ class ConfException(Exception):
         self.message = message
 
 
-REMOVE_GCODE = False
+REMOVE_GCODE = True
 PERF_INFO = True
 GCODE_VERBOSE = True
 
@@ -18,7 +18,7 @@ retract_lift_speed = 15000              # Retract lift speed in mm/mm
 
 # Printer kinematics settings (check FW setup for RepRap FW)
 printer_corexy = True
-printer_motor_speed_xy                   = 35000   # XY motor speed in mm/min
+printer_motor_speed_xy                   = 15000   # XY motor speed in mm/min
 printer_motor_speed_z                    = 1200    # Z motor speed  in mm/min
 
 printer_extruder_speed                   = [3600, 3600, 3600, 3600] # Cystomize in mm/min
@@ -29,7 +29,8 @@ prime_tower_y = 100.0                   # Prime tower position Y
 prime_tower_r = 10                      # Prime tower maximum radius
 prime_tower_print_speed = 1800          # Prime tower print speed 1800mm/min
 prime_tower_move_speed = 35000          # Prime tower move speed (into and out of prime tower)
-    
+prime_tower_extrusion_width_fact = 1.2  # Prime tower extrusion width is fact * tool_nozzle_diameter
+
 # Prime tower bands 
 prime_tower_band_width = 3              # Number of prime tower band width per tool 
 prime_tower_band_num_faces = 12         # Prime tower number of faces 
@@ -46,10 +47,10 @@ runtime_default     = 0                 # Default instruction time
 
 # Temp managment
 temp_idle_delta     = 30
-temp_heating_rate   = 0.6  # Heating rate estimate (in C/s)
-temp_cooling_rate   = 0.8  # Cooling rate estimate (in C/s)
+temp_heating_rate   = 0.6               # Heating rate estimate (in C/s)
+temp_cooling_rate   = 0.8               # Cooling rate estimate (in C/s)
 
-wipe_distance    = 0.0       # distance of wipe in mm
+wipe_distance    = 0.0                  # distance of wipe in mm
 
 #==============================================================================
 # Defaults - override while reading settings
@@ -128,7 +129,7 @@ def min_layer_height(tool_set):
 def calculate_E(tool_id, layer_height, distance):
     # Volume to extrude = Area (Diameter * Layer Height) * Distance
     nozzle_radius = float(tool_nozzle_diameter[tool_id]) / 2.0
-    V_out = (2.0 * nozzle_radius * distance + math.pi * ((nozzle_radius) ** 2)) * layer_height
+    V_out = (2.0 * nozzle_radius * distance) * prime_tower_extrusion_width_fact * layer_height
     # Extrude Length = (Volume to Extrude / Filament Cross Section Area) * Extrusion Multiplier
     E = ((V_out * 4.0) / (math.pi * (float(tool_filament_diameter[tool_id]) ** 2)) * float(tool_extrusion_multiplier[tool_id]))
         

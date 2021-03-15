@@ -139,3 +139,6 @@ cython_debug/
 
 # GCODE
 *.gcode
+
+# Pycharm project settings
+.idea
